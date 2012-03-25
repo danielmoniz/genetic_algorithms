@@ -1,4 +1,5 @@
 from random import random
+from random import getrandbits
 number_to_solve = 50
 CROSSOVER_RATE = 0.7
 MUTATION_RATE = 0.001
