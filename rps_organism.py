@@ -17,8 +17,8 @@ class SubOrganism(Organism):
         if random() < self.potency:
             pass
 # be like parent
-            return Organism(self.mutation_tendency, self.potency)
+            return SubOrganism(self.rps, self.mutation_tendency, self.potency)
         else:
             pass
 # be different from parent
-            return Organism(self.mutation_tendency, self.potency)
+            return SubOrganism(self.rps, self.mutation_tendency, self.potency)
