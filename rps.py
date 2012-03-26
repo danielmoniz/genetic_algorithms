@@ -113,11 +113,13 @@ def breed_organism_from_parents(organisms):
     rps_collection = zip(*rps_distributions)
     new_rps_tuple = tuple([sum(collection)/len(collection) for collection in rps_collection])
 
-# @TODO Generate average mutation tendency and potency as well
-    print "new_rps_tuple:", new_rps_tuple
-    return Organism(new_rps_tuple)
-    new_organism = Organism(new_rps_tuple)
-    print new_organism.rps
+# generate new mutation_tendency and potency based on the top organisms
+    mutation_tendencies = [org.mutation_tendency for org in organisms]
+    new_mutation_tendency = sum(mutation_tendencies)/len(mutation_tendencies)
+    potencies = [org.potency for org in organisms]
+    new_potency = sum(mutation_tendencies)/len(mutation_tendencies)
+
+    return Organism(new_rps_tuple, new_mutation_tendency, new_potency)
 
 def run_game_logic(input1, input2):
     """Assumes input has been cleaned and formatted to fit 'R', 'P', or 'S' for
