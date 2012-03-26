@@ -140,7 +140,8 @@ def run_game_turn(organisms, opponent_input):
     if num_members_to_breed > 0:
         for i in range(num_members_to_breed):
 # Note that choice() is a function from the random module
-            member_to_breed = choice(organisms)
+            best_parents = get_strongest_organisms(organisms)
+            member_to_breed = breed_organism_from_parents(best_parents)
             organisms.append(member_to_breed.reproduce())
 
     """for chrom in organisms:
@@ -150,6 +151,30 @@ def run_game_turn(organisms, opponent_input):
     """
         
     return organisms
+
+def get_strongest_organisms(organisms):
+    """Return a list of the strongest organisms. Will be at least one, but could be more."""
+    strongest_value = 0
+    strongest = []
+    for organism in organisms:
+        if organism.hit_points >= strongest_value:
+# empty the list of strongest organisms if a stronger one shows up
+            if organism.hit_points > strongest_value:
+                del strongest[:]
+                strongest_value = organism.hit_points
+            strongest.append(organism)
+
+    return strongest
+
+def breed_organism_from_parents(organisms):
+    """Given a list of organisms, return a child of all of them by averaging their rps distributions."""
+    rps_distributions = [org.rps for org in organisms]
+    rps_collection = zip(*rps_distributions)
+    new_rps_tuple = tuple([sum(collection)/len(collection) for collection in rps_collection])
+
+# @TODO Generate average mutation tendency and potency as well
+    return Chromosone(new_rps_tuple)
+
 
 
 def run_game_logic(input1, input2):
@@ -187,7 +212,7 @@ def run_game_logic(input1, input2):
 chromosones = generate_initial_population()
 
 organisms = []
-for i in range(1000):
+for i in range(20):
     organisms = run_game_turn(chromosones, 'R')
 
 #print get_organism_stats(organisms)
@@ -198,19 +223,11 @@ for chrom in organisms:
     print "Hit points:", chrom.hit_points"""
 
 organism_list = sorted(organism_list)
+print "Organism list, sorted by hit points:"
 for org in organism_list:
     print org
 
-"""
-# if there is a win in the population, kill non-winners and re-populate with
-# children of winners
-    winners = []
-    if 'win' in turn_results:
-        for i in range(len(turn_results)):
-            if (turn_results[i] == 'win'):
-                winners.append(organisms[i])
-    # @TODO NEED to account for cases where none of the population win (or tie)
-    else:
-# quick hack: grab two random organisms if nobody wins
-# @TODO Fix this! Should be pulling the organisms that tie, rather than win
-        winners = [choice(organisms) for i in range(2)]"""
+strongest_organisms = get_strongest_organisms(organisms)
+
+super_child_organism = breed_organism_from_parents(strongest_organisms)
+print "Latest super child organism:", [round(rps_element, 2) for rps_element in super_child_organism.rps]
