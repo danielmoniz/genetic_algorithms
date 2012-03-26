@@ -3,11 +3,12 @@ from random import random
 from random import choice
 
 POPULATION = 100
+HIT_POINTS = 10
 
 class Chromosone():
     """Stores information about chromosone objects such as their chances of mutation, similarity to offspring, etc."""
     
-    def __init__(self, rps, mutation_tendency = 0.01, potency = 0.5):
+    def __init__(self, rps, mutation_tendency = 0.1, potency = 0.5):
         """Potency determines the similarity to the parent when reproducing.
         Mutation tendency determines, when a child is different, how different
         it is.
@@ -24,6 +25,8 @@ class Chromosone():
 # store losses and wins (store wins for kicks)
         self.losses = 0
         self.wins = 0
+        self.draws = 0
+        self.hit_points = HIT_POINTS
 
     def reproduce(self):
         """Each chromosone reproduces asexually."""
@@ -36,6 +39,17 @@ class Chromosone():
 # be different from parent
             return Chromosone(self.rps, self.mutation_tendency, self.potency)
 
+    def lose(self):
+        self.losses += 1
+        self.hit_points -= 3
+
+    def win(self):
+        self.wins += 1
+        self.hit_points += 1
+
+    def draw(self):
+        self.draws += 1
+        self.hit_points -= 1
 
 def normalize_tuple(tuple_to_normalize, total = 1):
     """Take a total value and a tuple. Normalize the tuple's entries such that
@@ -99,37 +113,44 @@ def get_rps_choice(rps_distribution):
             break
     return rps_choice
 
-def run_game_turn(chromosones, opponent_input):
+def run_game_turn(organisms, opponent_input):
     """Run a game turn given RPS distributions and an opponent's input. Then kill the weak members and generate new ones."""
-    rps_distributions = [chrom.rps for chrom in chromosones]
+    rps_distributions = [chrom.rps for chrom in organisms]
     turn_results = get_rps_dist_game_results(rps_distributions, opponent_input)
-# if there is a win in the population, kill non-winners and re-populate with
-# children of winners
-    winners = []
-    if 'win' in turn_results:
-        for i in range(len(turn_results)):
-            if (turn_results[i] == 'win'):
-                winners.append(chromosones[i])
-    # @TODO NEED to account for cases where none of the population win (or tie)
-    else:
-# quick hack: grab two random chromosones if nobody wins
-# @TODO Fix this! Should be pulling the chromosones that tie, rather than win
-        winners = [choice(chromosones) for i in range(2)]
 
-# Breed new chromosones, equal to the number of open spaces left in the
-# controlled population. Select randomly from the list of winners.
-    num_members_to_breed = POPULATION - len(winners)
-    for i in range(num_members_to_breed):
-# Note that choice() is a function from the random module
-        member_to_breed = choice(winners)
-        winners.append(member_to_breed.reproduce())
-    for chrom in winners:
-        print [round(rps_element, 2) for rps_element in chrom.rps]
-    print "-----------------------------------"
+# store wins and losses in each organism
+    for i in range(len(organisms)):
+        if turn_results[i] == 'win':
+            organisms[i].win()
+        elif turn_results[i] == 'draw':
+            organisms[i].draw()
+        elif turn_results[i] == 'loss':
+            organisms[i].lose()
+
+# if organism has run out of hit points, kill it!
+    for organism in organisms:
+        if organism.hit_points <= 0:
+            organisms.remove(organism)
+
         
-    # print [chrom.rps for chrom in winners]
 
-# if there are no ties and no wins, don't kill any of the organisms
+# Breed new organisms, equal to the number of open spaces left in the
+# controlled population. Select randomly from the list of organisms.
+    num_members_to_breed = POPULATION - len(organisms)
+    if num_members_to_breed > 0:
+        for i in range(num_members_to_breed):
+# Note that choice() is a function from the random module
+            member_to_breed = choice(organisms)
+            organisms.append(member_to_breed.reproduce())
+
+    """for chrom in organisms:
+        print [round(rps_element, 2) for rps_element in chrom.rps],
+        print "Hit points:", chrom.hit_points
+    print "-----------------------------------"
+    """
+        
+    return organisms
+
 
 def run_game_logic(input1, input2):
     """Assumes input has been cleaned and formatted to fit 'R', 'P', or 'S' for
@@ -139,7 +160,7 @@ def run_game_logic(input1, input2):
         return 'draw'
     elif input1 == 'R':
         if input2 == 'P':
-            return 'lose'
+            return 'loss'
         elif input2 == 'S':
             return 'win'
 # should not hit else! input1==input2 case already covered
@@ -147,24 +168,49 @@ def run_game_logic(input1, input2):
         if input2 == 'R':
             return 'win'
         elif input2 == 'S':
-            return 'lose'
+            return 'loss'
 # should not hit else! input1==input2 case already covered
     elif input1 == 'S':
         if input2 == 'R':
-            return 'lose'
+            return 'loss'
         elif input2 == 'P':
             return 'win'
     else:
         print "Something went hideously wrong in the game_logic function."
         exit(0)
 
-
+"""def get_organism_stats(organisms):
+    organism_rps_sum = []
+    for organism in organisms:
+        organism"""
+        
 chromosones = generate_initial_population()
-# print chromosones 
-for chrom in chromosones:
-    """print chrom.rps
-    print chrom.mutation_tendency
-    print chrom.potency"""
 
-for i in range(100):
-    run_game_turn(chromosones, 'R')
+organisms = []
+for i in range(1000):
+    organisms = run_game_turn(chromosones, 'R')
+
+#print get_organism_stats(organisms)
+organism_list = []
+for chrom in organisms:
+    organism_list.append([chrom.hit_points, [round(rps_element, 2) for rps_element in chrom.rps]])
+    """print [round(rps_element, 2) for rps_element in chrom.rps],
+    print "Hit points:", chrom.hit_points"""
+
+organism_list = sorted(organism_list)
+for org in organism_list:
+    print org
+
+"""
+# if there is a win in the population, kill non-winners and re-populate with
+# children of winners
+    winners = []
+    if 'win' in turn_results:
+        for i in range(len(turn_results)):
+            if (turn_results[i] == 'win'):
+                winners.append(organisms[i])
+    # @TODO NEED to account for cases where none of the population win (or tie)
+    else:
+# quick hack: grab two random organisms if nobody wins
+# @TODO Fix this! Should be pulling the organisms that tie, rather than win
+        winners = [choice(organisms) for i in range(2)]"""
