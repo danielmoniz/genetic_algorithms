@@ -1,3 +1,4 @@
-This is an attempt to program the genetic algorithm found at www.ai-junkie.com.
-If all goes well, I will expand upon this algorithm and create a framework for
-solving problems with genetic algorithms in general.
+This a genetic algorithm that generates strategies (probability distributions) in Rock, Paper, Scissors.
+
+When executing the file, type the population and number of game turns that you want as arguments.
+Ex. ./rps.py 100 50 (for 100 population, 50 game turns).

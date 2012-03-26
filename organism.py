@@ -19,7 +19,8 @@ class Organism():
         self.potency = self.post_mutation_value(mutation_tendency, potency)
 
 # calculate the new tuple indicating the chromosone's RPS strategy
-        rps_tuple = tuple([self.post_mutation_value(mutation_tendency, i) for i in rps]) 
+        rps_tuple = tuple([self.post_mutation_value(mutation_tendency, i) for i
+            in rps]) 
         self.rps = normalize_tuple(rps_tuple)
 
 # store losses and wins (store wins for kicks)
@@ -40,20 +41,28 @@ class Organism():
             return Organism(self.rps, self.mutation_tendency, self.potency)
 
     def lose(self):
+        """Tells the organism that it lost a round of play."""
         self.losses += 1
         self.hit_points -= 3
 
     def win(self):
+        """Tells the organism that it won a round of play."""
         self.wins += 1
         self.hit_points += 1
 
     def draw(self):
+        """Tells the organism that it tied in a round of play."""
         self.draws += 1
         self.hit_points -= 1
 
+    def get_success_value(self):
+        """Returns a value indication the overall effectiveness of the
+        organism."""
+        pass
+
     def post_mutation_value(self, tendency, current_value):
-        """Determine the value after a mutation given the mutation tendency and the
-        original value itself."""
+        """Determine the value after a mutation given the mutation tendency and
+        the original value itself."""
         if random() <= tendency:
             sign = lambda x: math.copysign(1, x)
             mod_sign = sign(random() - 0.5)
@@ -62,4 +71,3 @@ class Organism():
             mutation_value = 0
 
         return current_value + mutation_value
-

@@ -1,10 +1,19 @@
+import sys
 from utility import normalize_tuple
 from random import random
 from random import choice
 from organism import Organism
 
-POPULATION = 100
-HIT_POINTS = 10
+print "------------------------"
+try:
+    POPULATION = int(sys.argv[1])
+    NUM_GAME_TURNS = int(sys.argv[2])
+    print "Population:", POPULATION, ", number of game turns:", NUM_GAME_TURNS
+except IndexError:
+# Default population and game turn settings
+    POPULATION = 100
+    NUM_GAME_TURNS = 20
+    print "Using default population (" + str(POPULATION) + ") and number of game turns (" + str(NUM_GAME_TURNS) + ")."
 
 def generate_initial_population():
     """Generate the initial population of AI strategies. Do so completely
@@ -129,27 +138,20 @@ def run_game_logic(input1, input2):
         print "Something went hideously wrong in the game_logic function."
         exit(0)
 
-"""def get_organism_stats(organisms):
-    organism_rps_sum = []
-    for organism in organisms:
-        organism"""
-        
 chromosones = generate_initial_population()
 
 organisms = []
-for i in range(20):
+for i in range(NUM_GAME_TURNS):
     organisms = run_game_turn(chromosones, 'R')
 
 #print get_organism_stats(organisms)
 organism_list = []
 for chrom in organisms:
     organism_list.append([chrom.hit_points, [round(rps_element, 2) for rps_element in chrom.rps]])
-    """print [round(rps_element, 2) for rps_element in chrom.rps],
-    print "Hit points:", chrom.hit_points"""
 
 organism_list = sorted(organism_list)
-print "Organism list, sorted by hit points:"
-for org in organism_list:
+print "Top 5 (or less) organisms, sorted by hit points:"
+for org in reversed(organism_list[-5:]):
     print org
 
 strongest_organisms = get_strongest_organisms(organisms)
