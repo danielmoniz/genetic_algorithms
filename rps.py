@@ -51,6 +51,11 @@ def get_rps_choice(rps_distribution):
 
 def run_game_turn(organisms, opponent_input):
     """Run a game turn given RPS distributions and an opponent's input. Then kill the weak members and generate new ones."""
+    for org in organisms:
+        print dir(org)
+        print "turns in play:", org.turns
+    print "==="
+    #print organisms
     rps_distributions = [chrom.rps for chrom in organisms]
     turn_results = get_rps_dist_game_results(rps_distributions, opponent_input)
 
@@ -109,7 +114,10 @@ def breed_organism_from_parents(organisms):
     new_rps_tuple = tuple([sum(collection)/len(collection) for collection in rps_collection])
 
 # @TODO Generate average mutation tendency and potency as well
+    print "new_rps_tuple:", new_rps_tuple
     return Organism(new_rps_tuple)
+    new_organism = Organism(new_rps_tuple)
+    print new_organism.rps
 
 def run_game_logic(input1, input2):
     """Assumes input has been cleaned and formatted to fit 'R', 'P', or 'S' for
@@ -138,7 +146,11 @@ def run_game_logic(input1, input2):
         print "Something went hideously wrong in the game_logic function."
         exit(0)
 
+print "---------------------------------------------------"
 chromosones = generate_initial_population()
+for chrom in chromosones:
+    print chrom
+    print chrom.rps
 
 organisms = []
 for i in range(NUM_GAME_TURNS):

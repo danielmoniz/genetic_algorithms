@@ -8,7 +8,7 @@ class Organism():
     """Stores information about chromosone objects such as their chances of
     mutation, similarity to offspring, etc."""
     
-    def __init__(self, rps, mutation_tendency = 0.1, potency = 0.5):
+    def __init__(self, mutation_tendency = 0.1, potency = 0.5):
         """Potency determines the similarity to the parent when reproducing.
         Mutation tendency determines, when a child is different, how different
         it is. 'rps' is the tuple indication the distribution of rock, paper,
@@ -18,42 +18,30 @@ class Organism():
             mutation_tendency)
         self.potency = self.post_mutation_value(mutation_tendency, potency)
 
-# calculate the new tuple indicating the chromosone's RPS strategy
-        rps_tuple = tuple([self.post_mutation_value(mutation_tendency, i) for i
-            in rps]) 
-        self.rps = normalize_tuple(rps_tuple)
-
 # store losses and wins (store wins for kicks)
         self.losses = 0
         self.wins = 0
         self.draws = 0
+        self.turns = 0
         self.hit_points = HIT_POINTS
-
-    def reproduce(self):
-        """Each chromosone reproduces asexually."""
-        if random() < self.potency:
-            pass
-# be like parent
-            return Organism(self.rps, self.mutation_tendency, self.potency)
-        else:
-            pass
-# be different from parent
-            return Organism(self.rps, self.mutation_tendency, self.potency)
 
     def lose(self):
         """Tells the organism that it lost a round of play."""
         self.losses += 1
         self.hit_points -= 3
+        self.turns += 1
 
     def win(self):
         """Tells the organism that it won a round of play."""
         self.wins += 1
         self.hit_points += 1
+        self.turns += 1
 
     def draw(self):
         """Tells the organism that it tied in a round of play."""
         self.draws += 1
         self.hit_points -= 1
+        self.turns += 1
 
     def get_success_value(self):
         """Returns a value indication the overall effectiveness of the
@@ -71,3 +59,14 @@ class Organism():
             mutation_value = 0
 
         return current_value + mutation_value
+
+    def reproduce(self):
+        """Each chromosone reproduces asexually."""
+        if random() < self.potency:
+            pass
+# be like parent
+            return Organism(self.mutation_tendency, self.potency)
+        else:
+            pass
+# be different from parent
+            return Organism(self.mutation_tendency, self.potency)
