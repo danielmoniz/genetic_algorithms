@@ -2,7 +2,7 @@ import sys
 from utility import normalize_tuple
 from random import random
 from random import choice
-from organism import Organism
+from rps_organism import SubOrganism as Organism
 
 print "------------------------"
 try:
