@@ -9,7 +9,6 @@ class SubOrganism(Organism):
 # calculate the new tuple indicating the chromosone's RPS strategy
         rps_tuple = tuple([self.post_mutation_value(mutation_tendency, i) for i
             in rps]) 
-        print "in constructor. rps:", rps_tuple
         self.rps = normalize_tuple(rps_tuple)
 
     def reproduce(self):
@@ -22,3 +21,4 @@ class SubOrganism(Organism):
             pass
 # be different from parent
             return SubOrganism(self.rps, self.mutation_tendency, self.potency)
+

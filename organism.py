@@ -24,24 +24,36 @@ class Organism():
         self.draws = 0
         self.turns = 0
         self.hit_points = HIT_POINTS
+        self.num_turns_stored = 5
+        self.recent_turn_results = []
 
     def lose(self):
         """Tells the organism that it lost a round of play."""
         self.losses += 1
         self.hit_points -= 3
         self.turns += 1
+        self.update_recent_turn_results('L')
 
     def win(self):
         """Tells the organism that it won a round of play."""
         self.wins += 1
         self.hit_points += 1
         self.turns += 1
+        self.update_recent_turn_results('W')
 
     def draw(self):
         """Tells the organism that it tied in a round of play."""
         self.draws += 1
         self.hit_points -= 1
         self.turns += 1
+        self.update_recent_turn_results('D')
+
+    def update_recent_turn_results(self, result):
+        """Update the object attribute storing the previous X turns of data.
+        Ensure that there is never more than X pieces of data stored."""
+        if len(self.recent_turn_results) >= self.num_turns_stored:
+            self.recent_turn_results.pop(0)
+        self.recent_turn_results.append(result)
 
     def get_success_value(self):
         """Returns a value indication the overall effectiveness of the
