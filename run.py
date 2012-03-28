@@ -2,7 +2,7 @@
 # Import the necessary files here, depending on your game.
 # It is vital that they are represented as 'Organism' and 'Game'.
 from rps_organism import SubOrganism as Organism
-from rps import RockPaperScissors as Game
+from rock_paper_scissors import RockPaperScissors as Game
 
 import utility
 import sys

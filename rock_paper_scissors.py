@@ -12,7 +12,7 @@ class RockPaperScissors():
 
     def generate_initial_population(self):
         """Generate the initial population of AI strategies. Do so completely
-        randomly."""
+        randomly. Return a list of generated organisms."""
         return [Organism(self.create_random_rps_tuple()) for i in range(self.population)]
 
     def create_random_rps_tuple(self):
@@ -30,13 +30,14 @@ class RockPaperScissors():
         return self.actions[index_choice]
 
     def get_rps_dist_game_results(self, rps_distributions, opponent_input):
-        """Return the RPS distribution game results. Run the opponent's input
-        against all of the given AI scripts (rock-paper-scissors distributions,
-        stored as tuples)."""
-# determine choice of R, P, or S given each RPS probability distribution
-        ai_choices = [self.get_rps_choice(rps_dist) for rps_dist in rps_distributions]
+        """Return the RPS distribution game results, ie. a list of turn
+        outcomes as strings. Run the opponent's input against all of the given
+        AI scripts (eg. rock-paper-scissors distributions, stored as tuples)."""
+        ai_choices = [self.get_rps_choice(rps_dist) 
+            for rps_dist in rps_distributions]
 
-        return [self.run_game_logic(ai_choice, opponent_input) for ai_choice in ai_choices]
+        return [self.run_game_logic(ai_choice, opponent_input) 
+            for ai_choice in ai_choices]
 
     def run_game_turn(self, organisms, opponent_input):
         """Run a game turn given RPS distributions and an opponent's input.
@@ -44,7 +45,8 @@ class RockPaperScissors():
         remaining organisms."""
         rps_distributions = [chrom.rps for chrom in organisms]
 
-        turn_results = self.get_rps_dist_game_results(rps_distributions, opponent_input)
+        turn_results = self.get_rps_dist_game_results(
+            rps_distributions, opponent_input)
 
 # store wins and losses in each organism
         for i in range(len(organisms)):
@@ -77,7 +79,8 @@ class RockPaperScissors():
         killable_organisms = filter(is_killable, organisms)
 
 # order the organisms by their success value
-        ordered_organisms = sorted(killable_organisms, key=lambda org:org.get_success_value())
+        ordered_organisms = sorted(killable_organisms, 
+            key=lambda org:org.get_success_value())
 
 # Generate success values for each organisms' recent track record.
         success_values = [org.get_success_value() for org in killable_organisms]
@@ -104,9 +107,10 @@ class RockPaperScissors():
 
 # @TODO Could use unit testing for the run_game_logic function.
     def run_game_logic(self, input1, input2):
-        """Assumes input has been cleaned and formatted to fit 'R', 'P', or 'S' for
-        Rock, Paper, and Scissors.  Runs the game on the given inputs.
-        Returns 'win', 'lose', or 'draw', centered on input1 as the main player."""
+        """Assumes input has been cleaned and formatted to fit 'R', 'P', or 'S'
+        for Rock, Paper, and Scissors.  Runs the game on the given inputs.
+        Returns 'win', 'lose', or 'draw', centered on input1 as the main
+        player."""
         if input1 == input2:
             return 'draw'
         elif input1 == 'R':
@@ -131,21 +135,24 @@ class RockPaperScissors():
             exit(0)
 
     def breed_organism_from_parents(self, organisms):
-        """Given a list of organisms, return a child of all of them by averaging their rps distributions."""
+        """Given a list of organisms, return a child of all of them by
+        averaging their rps distributions."""
         rps_distributions = [org.rps for org in organisms]
         rps_collection = zip(*rps_distributions)
-        new_rps_tuple = tuple([sum(collection)/len(collection) for collection in rps_collection])
+        new_rps_tuple = tuple([sum(collection)/len(collection) 
+            for collection in rps_collection])
 
 # generate new mutation_tendency and potency based on the top organisms
         mutation_tendencies = [org.mutation_tendency for org in organisms]
-        new_mutation_tendency = sum(mutation_tendencies)/len(mutation_tendencies)
+        new_tendency = sum(mutation_tendencies)/len(mutation_tendencies)
         potencies = [org.potency for org in organisms]
         new_potency = sum(mutation_tendencies)/len(mutation_tendencies)
 
-        return Organism(new_rps_tuple, new_mutation_tendency, new_potency)
+        return Organism(new_rps_tuple, new_tendency, new_potency)
 
     def get_strongest_organisms(self, organisms):
-        """Return a list of the strongest organisms. Will be at least one, but could be more."""
+        """Return a list of the strongest organisms. Will be at least one, but
+        could be more."""
         strongest_value = 0
         strongest = []
         for organism in organisms:

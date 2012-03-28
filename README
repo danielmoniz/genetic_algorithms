@@ -1,4 +1,28 @@
 This a genetic algorithm that generates strategies (probability distributions) in Rock, Paper, Scissors.
 
 When executing the file, type the population and number of game turns that you want as arguments.
-Ex. ./rps.py 100 50 (for 100 population, 50 game turns).
+Ex. ./run.py 100 50 (for 100 population, 50 game turns).
+
+The classes have been designed in such a way that you can run the algorithm on
+a game of your choosing, assuming the game can be classified by the following
+constraints:
+
+1. Uniform turns, ie. actions are the same on every turn of gameplay.
+2. Actions that can be compared for the purpose of outputting a win, loss or a
+draw. Your program need not allow for draws.
+
+If you are using this project as a framework, you must create a number of
+functions within your game class (eg. rock_paper_scissors.py). There is a
+template file in place to demonstrate which functions are necessary. These
+functions perform simple tasks such as returning which player wins given two
+inputs, generation the initial population, killing weak organisms and replacing
+them with newly bred organisms, etc.
+
+You should also create a SubOrganism class (eg. rps_organism.py) that extends
+organism.py. This includes any specific rules for your organisms. It is here
+that a tuple containing the possible actions for a player should be
+initialized. This file can be nearly identical. Note, however, that in its
+current incarnation, organism.rps is used instead of a more general attribute
+name such as organism.distribution or organism.dist. You should set this
+attribute to match your game class, though this attribute name may be
+susceptible to change in the future.

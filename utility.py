@@ -5,6 +5,13 @@ def normalize_tuple(tuple_to_normalize, total = 1):
     they add up to total."""
     if total == 0:
         return False
+
+# if tuple includes negative values, remove them by subtracting the largest
+# negative value
+    if min(tuple_to_normalize) < 0:
+        tuple_to_normalize = [element - min(tuple_to_normalize) 
+            for element in tuple_to_normalize]
+
     current_total = sum(tuple_to_normalize)
     divisor = current_total / total
     return tuple([i/divisor for i in tuple_to_normalize])
