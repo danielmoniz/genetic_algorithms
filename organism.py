@@ -57,8 +57,9 @@ class Organism():
 
     def get_success_value(self):
         """Returns a value indication the overall effectiveness of the
-        organism."""
-        pass
+        organism. Utilize recent turn results."""
+        result_to_value = {'W': 1, 'D': 0, 'L': -1}
+        return sum([result_to_value[result] for result in self.recent_turn_results])
 
     def post_mutation_value(self, tendency, current_value):
         """Determine the value after a mutation given the mutation tendency and
