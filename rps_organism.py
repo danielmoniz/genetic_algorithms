@@ -3,7 +3,7 @@ from organism import Organism
 from random import random
 
 class SubOrganism(Organism):
-    def __init__(self, rps, mutation_tendency = 0.1, potency = 0.5):
+    def __init__(self, rps, mutation_tendency = 0.3, potency = 0.5):
         Organism.__init__(self, mutation_tendency, potency)
 
 # calculate the new tuple indicating the chromosone's RPS strategy

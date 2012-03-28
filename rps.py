@@ -33,7 +33,8 @@ chromosones = game.generate_initial_population()
     """
 
 organisms = []
-user_rps = utility.normalize_tuple((0.2, 0.5, 0.3))
+user_rps = (1, 0, 0)
+#user_rps = utility.normalize_tuple((0.2, 0.5, 0.3))
 print "User distribution:", user_rps
 
 # Loop through each game turn. Select a random user choice out of the provided

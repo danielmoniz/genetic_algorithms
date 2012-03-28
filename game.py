@@ -1,6 +1,7 @@
 from rps_organism import SubOrganism as Organism
 import utility
 from random import random
+import math
 
 class RockPaperScissors():
     def __init__(self, population, num_game_turns):
@@ -32,13 +33,15 @@ class RockPaperScissors():
         """Return the RPS distribution game results. Run the opponent's input
         against all of the given AI scripts (rock-paper-scissors distributions,
         stored as tuples)."""
-        ai_choices = [self.get_rps_choice(rps_dist) for rps_dist in rps_distributions]
 # determine choice of R, P, or S given each RPS probability distribution
+        ai_choices = [self.get_rps_choice(rps_dist) for rps_dist in rps_distributions]
 
         return [self.run_game_logic(ai_choice, opponent_input) for ai_choice in ai_choices]
 
     def run_game_turn(self, organisms, opponent_input):
-        """Run a game turn given RPS distributions and an opponent's input. Then kill the weak members and generate new ones."""
+        """Run a game turn given RPS distributions and an opponent's input.
+        Then kill the weak members and generate new ones. Return a list of the
+        remaining organisms."""
         rps_distributions = [chrom.rps for chrom in organisms]
 
         turn_results = self.get_rps_dist_game_results(rps_distributions, opponent_input)
@@ -52,14 +55,10 @@ class RockPaperScissors():
             elif turn_results[i] == 'loss':
                 organisms[i].lose()
 
-# if organism has run out of hit points, kill it!
-        for organism in organisms:
-            if organism.hit_points <= 0:
-                organisms.remove(organism)
+# Kill the least-performing organisms.
+        num_members_to_breed = self.kill_worst_organisms(organisms)
 
-# Breed new organisms, equal to the number of open spaces left in the
-# controlled population. Select randomly from the list of organisms.
-        num_members_to_breed = self.population - len(organisms)
+# Breed new organisms to fill thhe gap caused by killing them.
         if num_members_to_breed > 0:
             for i in range(num_members_to_breed):
 # Note that choice() is a function from the random module
@@ -68,6 +67,40 @@ class RockPaperScissors():
                 organisms.append(member_to_breed.reproduce())
             
         return organisms
+
+    def kill_worst_organisms(self, organisms):
+        """Finds the least-performing organisms and kills them. Returns the
+        number of killed organisms. Does NOT return a set of organisms; it
+        simply removes them from the list sent as a parameter."""
+# Find all organisms with at least X turns played. These can be killed.
+        is_killable = lambda org:len(org.recent_turn_results) >= org.num_turns_stored
+        killable_organisms = filter(is_killable, organisms)
+
+# order the organisms by their success value
+        ordered_organisms = sorted(killable_organisms, key=lambda org:org.get_success_value())
+
+# Generate success values for each organisms' recent track record.
+        success_values = [org.get_success_value() for org in killable_organisms]
+# calculate how many organisms should be killed (and bred). Should be the
+# number of killable organisms divided by two (rounded up)
+        num_members_to_breed = int(math.ceil(float(len(ordered_organisms))/2))
+
+# finally, remove organisms and return number killed/number to breed.
+        for i in range(num_members_to_breed):
+            organisms.remove(ordered_organisms[i])
+        return num_members_to_breed
+
+# DEPRECATED
+    def kill_worst_organisms_by_hit_points(self, organisms):
+        """Unused, but still useable. Kills worst organisms based on their
+        reaching 0 hit points. Returns the number of organisms killed."""
+        for organism in organisms:
+            if organism.hit_points <= 0:
+                organisms.remove(organism)
+
+# calculate number of organisms to breed and return this number
+        num_members_to_breed = self.population - len(organisms)
+        return num_members_to_breed
 
 # @TODO Could use unit testing for the run_game_logic function.
     def run_game_logic(self, input1, input2):
@@ -124,4 +157,3 @@ class RockPaperScissors():
                 strongest.append(organism)
 
         return strongest
-
