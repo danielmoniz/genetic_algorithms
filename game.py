@@ -1,5 +1,5 @@
 from rps_organism import SubOrganism as Organism
-from utility import normalize_tuple
+import utility
 from random import random
 
 class RockPaperScissors():
@@ -7,6 +7,7 @@ class RockPaperScissors():
         self.name = "Rock, Paper, Scissors"
         self.population = population 
         self.num_game_turns = num_game_turns 
+        self.actions = ['R', 'P', 'S']
 
     def generate_initial_population(self):
         """Generate the initial population of AI strategies. Do so completely
@@ -16,22 +17,16 @@ class RockPaperScissors():
     def create_random_rps_tuple(self):
         """Generate a random RPS probability distribution. Returns a normalized
         tuple."""
-# @TODO Deal with magic number 3 !
-        return normalize_tuple(tuple([random() for j in range(3)]))
+        num_actions = len(self.actions)
+        return utility.normalize_tuple(
+            tuple([random() for j in range(num_actions)]))
 
     def get_rps_choice(self, rps_distribution):
         """Return a random choice given a probability distribution between R, P,
         and S."""
         random_choice = random()
-# @TODO rps should be defined externally somewhere
-        rps = ['R', 'P', 'S']
-        rps_choice = None
-        for i in range(len(rps_distribution)):
-            interval = sum(rps_distribution[0:i+1])
-            if random_choice <= interval:
-                rps_choice = rps[i]
-                break
-        return rps_choice
+        index_choice = utility.get_distribution_choice(rps_distribution)
+        return self.actions[index_choice]
 
     def get_rps_dist_game_results(self, rps_distributions, opponent_input):
         """Return the RPS distribution game results. Run the opponent's input

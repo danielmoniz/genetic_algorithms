@@ -1,8 +1,10 @@
+#!/usr/bin/env python
 # Import the necessary files here, depending on your game.
 # It is vital that they are represented as 'Organism' and 'Game'.
 from rps_organism import SubOrganism as Organism
 from game import RockPaperScissors as Game
 
+import utility
 import sys
 
 MAJOR_LINE_BREAK = "---------------------------------------------------"
@@ -31,8 +33,15 @@ chromosones = game.generate_initial_population()
     """
 
 organisms = []
+user_rps = utility.normalize_tuple((0.2, 0.5, 0.3))
+print "User distribution:", user_rps
+
+# Loop through each game turn. Select a random user choice out of the provided
+# distribution each time.
 for i in range(NUM_GAME_TURNS):
-    organisms = game.run_game_turn(chromosones, 'R')
+    user_index_selection = utility.get_distribution_choice(user_rps)
+    user_action = game.actions[user_index_selection]
+    organisms = game.run_game_turn(chromosones, user_action)
 
 #print get_organism_stats(organisms)
 organism_list = []
